@@ -226,26 +226,16 @@ Wireshark I/Oグラフで通信継続中の品質劣化を可視化。
 ### Failover Timeline
 
 ```
-Time 0:00  - MPLS Path: Healthy, Active
-            SASE Path: Healthy, Standby
+### Failover Timeline
 
-Time 0:05  - MPLS latency increases (brownout begins)
+**[ 📷 ここに画像添付：FortiGate CLI - diagnose sys sdwan health-check (Before) ]**
 
-Time 0:07  - MPLS SLA violation detected
-            Health Check: 5 consecutive failures
+**[ 📷 ここに画像添付：FortiGate CLI - diagnose sys sdwan health-check (After) ]**
 
-Time 0:08  - Failover triggered
-            MPLS Path: SLA Violation, Standby
-            SASE Path: Healthy, Active
+**[ 📷 ここに画像添付：FortiGate CLI - execute log display (Failover event) ]**
 
-Time 0:15  - MPLS latency recovers
+Actual failover timing and behavior to be documented from CLI output.
 
-Time 0:20  - MPLS SLA restored
-            Health Check: 5 consecutive successes
-
-Time 0:21  - Failback triggered
-            MPLS Path: Healthy, Active
-            SASE Path: Healthy, Standby
 ```
 
 ### Key Observations
