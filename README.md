@@ -1,1 +1,326 @@
 # SD-WAN
+
+SD-WAN overlay implementation using FortiGate, providing dual-path connectivity over MPLS and SASE paths with intelligent path selection.
+
+---
+
+## Overview
+
+This component is part of an MPLS/SASE-integrated lab. It focuses on SD-WAN path selection, health monitoring, and failover behavior between multiple WAN paths.
+
+The lab demonstrates SD-WAN capabilities including:
+
+- **Dual-Path Design** – MPLS primary path with SASE backup
+- **Health Check** – Continuous endpoint monitoring
+- **SLA-based Failover** – Automatic path switching based on latency/jitter/loss
+
+**【日本語サマリ】**
+
+FortiGateを使用したSD-WANオーバーレイ実装。
+MPLS（プライマリ）とSASE（バックアップ）のデュアルパス設計、Health Checkによる常時監視、SLAベースの自動フェイルオーバーを検証。
+
+---
+
+## Architecture Position
+
+```
+┌──────────────────────────────────────────────────────┐
+│                    SASE Layer                        │
+├──────────────────────────────────────────────────────┤
+│                   SD-WAN Overlay         ◄── This component
+│  ┌─────────────┐              ┌─────────────┐        │
+│  │  MPLS Path  │              │  SASE Path  │        │
+│  │  (Primary)  │              │  (Backup)   │        │
+│  └─────────────┘              └─────────────┘        │
+├──────────────────────────────────────────────────────┤
+│                   MPLS Underlay                      │
+└──────────────────────────────────────────────────────┘
+```
+
+SD-WAN operates as the **Overlay Layer**, managing path selection between MPLS and SASE independently of underlay routing and security policy enforcement.
+
+**【日本語サマリ】**
+
+SD-WANはOverlay層として動作し、Underlay（MPLS）のルーティングやSASE層のセキュリティポリシーとは独立してパス選択を管理。
+
+---
+
+## Components
+
+### Dual-Path IPsec Tunnels
+
+| Path | Tunnel Name | Underlay | Priority |
+|------|-------------|----------|----------|
+| Primary | MPLS-VPN | MPLS L3VPN | High |
+| Backup | SASE-VPN | Internet (WireGuard) | Low |
+
+Both tunnels use IPsec ESP (Protocol 50) for site-to-site encryption.
+
+### Health Check Configuration
+
+| Parameter | Value | Purpose |
+|-----------|-------|---------|
+| Protocol | ICMP / HTTP | Endpoint reachability |
+| Interval | 500ms - 1000ms | Probe frequency |
+| Failover Threshold | 5 consecutive failures | Trigger path switch |
+| Recovery Threshold | 5 consecutive successes | Return to primary |
+
+### SLA Metrics
+
+| Metric | Threshold | Action |
+|--------|-----------|--------|
+| Latency | > 100ms | SLA violation |
+| Jitter | > 50ms | SLA violation |
+| Packet Loss | > 5% | SLA violation |
+
+**【日本語サマリ】**
+
+MPLS-VPN（プライマリ）とSASE-VPN（バックアップ）の2つのIPsecトンネルを構成。
+Health CheckはICMP/HTTPで500ms-1000ms間隔、5回連続失敗でフェイルオーバー。
+SLAはLatency 100ms / Jitter 50ms / Loss 5%を閾値として監視。
+
+---
+
+## Path Selection Logic
+
+### SD-WAN Rule Evaluation
+
+```
+Traffic arrives at SD-WAN Edge (FortiGate)
+       │
+       ▼
+┌─────────────────────────────┐
+│  Check MPLS-VPN Health      │
+│  - Health Check: OK?        │
+│  - SLA Metrics: Within?     │
+└──────────────┬──────────────┘
+               │
+       ┌───────┴───────┐
+       │               │
+       ▼               ▼
+   [Healthy]      [Unhealthy/SLA Violation]
+       │               │
+       ▼               ▼
+  Use MPLS-VPN    Use SASE-VPN
+  (Primary)       (Backup)
+```
+
+### Path Priority
+
+1. **MPLS Path** – Preferred when healthy (lower latency, stable bandwidth)
+2. **SASE Path** – Used during MPLS degradation or outage
+
+### AS-Path Prepending Requirement
+
+A critical design decision involved BGP AS-path manipulation:
+
+**Problem:** SASE path traversed fewer AS hops than MPLS path, causing BGP to prefer SASE by default.
+
+**Solution:** AS-path prepending applied to SASE-learned routes to ensure MPLS remained primary.
+
+This illustrates that SD-WAN path selection must account for underlying BGP mechanics.
+
+**【日本語サマリ】**
+
+SD-WANルールはHealth Check → SLAメトリクス の順で評価し、MPLSが正常ならMPLS、異常ならSASEを選択。
+SASEパスのASホップ数がMPLSより少なかったため、AS-path prependingでMPLSを優先パスに調整。
+
+---
+
+## Verification Results
+
+### Health Check Status
+
+**[ 📷 ここに画像添付：SD-WAN Health Check Before/After（2枚）]**
+
+**Before (Normal State):**
+
+| Tunnel | Health Check | SLA | Status |
+|--------|--------------|-----|--------|
+| MPLS-VPN | ✓ Alive | ✓ OK | Active |
+| SASE-VPN | ✓ Alive | ✓ OK | Standby |
+
+**After (MPLS Degradation):**
+
+| Tunnel | Health Check | SLA | Status |
+|--------|--------------|-----|--------|
+| MPLS-VPN | ✓ Alive | ✗ Violation | Standby |
+| SASE-VPN | ✓ Alive | ✓ OK | Active |
+
+Failover triggered by SLA violation, not complete outage.
+
+### IPsec Tunnel Verification
+
+FortiGate CLI confirmation:
+
+```
+diagnose vpn ike gateway list
+diagnose vpn tunnel list
+
+MPLS-VPN: selectors 1/1 (UP)
+SASE-VPN: selectors 1/1 (UP)
+```
+
+### ESP Packet Capture
+
+**[ 📷 ここに画像添付：Wireshark ESP パケットキャプチャ ]**
+
+| Field | MPLS-VPN | SASE-VPN |
+|-------|----------|----------|
+| Protocol | ESP (50) | ESP (50) |
+| Source | 10.0.0.1 (FG1) | 10.0.0.1 (FG1) |
+| Destination | 10.0.1.1 (FG2) | 10.0.1.1 (FG2) |
+| SPI | 0x20bf398a | 0x78ce2103 |
+
+SPI values confirm distinct tunnel identities.
+
+**【日本語サマリ】**
+
+Health Check Before/Afterで、MPLS SLA違反時にSASEへ自動フェイルオーバーを確認。
+IPsecトンネルは両方UP状態を維持し、ESPパケットキャプチャでSPI値による識別を検証。
+
+---
+
+## Brownout Detection
+
+### What is Brownout?
+
+Brownout is **partial degradation** without complete failure:
+- Increased latency
+- Higher jitter
+- Intermittent packet loss
+- Connection remains "up" but quality degrades
+
+### Why Brownout Matters
+
+Traditional monitoring (ping/up-down) misses brownout:
+
+| Scenario | Ping Status | User Experience |
+|----------|-------------|-----------------|
+| Complete Outage | DOWN | No connectivity |
+| Brownout | UP | Slow, choppy, unreliable |
+
+SD-WAN SLA monitoring detects brownout and triggers failover.
+
+### Brownout Verification
+
+**[ 📷 ここに画像添付：Brownout時 Wireshark I/O Graph ]**
+
+I/O Graph observations:
+- Traffic continues flowing (not zero)
+- Packet rate fluctuates
+- Quality degradation visible in time-series
+
+This demonstrates SD-WAN's ability to detect quality issues, not just connectivity loss.
+
+**【日本語サマリ】**
+
+Brownoutは完全断ではなく部分的な品質劣化（遅延増加、ジッター、パケットロス）。
+従来のPing監視では検知できないが、SD-WANのSLA監視で検知しフェイルオーバー可能。
+Wireshark I/Oグラフで通信継続中の品質劣化を可視化。
+
+---
+
+## Failover Behavior
+
+### Failover Timeline
+
+```
+Time 0:00  - MPLS Path: Healthy, Active
+            SASE Path: Healthy, Standby
+
+Time 0:05  - MPLS latency increases (brownout begins)
+
+Time 0:07  - MPLS SLA violation detected
+            Health Check: 5 consecutive failures
+
+Time 0:08  - Failover triggered
+            MPLS Path: SLA Violation, Standby
+            SASE Path: Healthy, Active
+
+Time 0:15  - MPLS latency recovers
+
+Time 0:20  - MPLS SLA restored
+            Health Check: 5 consecutive successes
+
+Time 0:21  - Failback triggered
+            MPLS Path: Healthy, Active
+            SASE Path: Healthy, Standby
+```
+
+### Key Observations
+
+- **Failover Time:** ~2-3 seconds after SLA violation
+- **Failback:** Automatic when primary recovers
+- **Session Continuity:** TCP sessions maintained during failover (with brief interruption)
+
+**【日本語サマリ】**
+
+SLA違反検知から2-3秒でフェイルオーバー実行。プライマリ復旧時は自動でフェイルバック。
+TCPセッションは短い中断を伴うが維持される。
+
+---
+
+## Lab Constraints
+
+### Simulated Brownout
+
+Production brownout occurs naturally. Lab simulation methods:
+- Traffic shaping on underlay
+- Latency injection via tc (traffic control)
+- Bandwidth limitation
+
+### WireGuard as SASE Path Underlay
+
+In production, site-to-site connectivity would use BGP over IPsec configured directly on edge routers. WireGuard is used in this lab because:
+- Linux POP devices cannot run BGP over IPsec natively
+- WireGuard provides UDP-based transport suitable for NAT traversal
+
+**【日本語サマリ】**
+
+ラボではtcコマンドによる遅延注入でBrownoutをシミュレート。
+本番の拠点間接続はBGP over IPsecだが、ラボではLinux POPでBGP over IPsecが設定できないためWireGuardで代替。
+
+---
+
+## Key Learnings
+
+### SD-WAN vs Traditional WAN
+
+| Aspect | Traditional | SD-WAN |
+|--------|-------------|--------|
+| Failover | Manual / Routing convergence | Automatic, SLA-based |
+| Brownout Detection | None | Built-in |
+| Path Selection | Routing protocol only | Policy + SLA + Health |
+| Visibility | Limited | Per-tunnel metrics |
+
+### SLA-Based Path Selection
+
+SLA monitoring provides advantages over simple health checks:
+- Detects quality degradation before failure
+- Enables proactive failover
+- Maintains user experience during brownout
+
+### Integration Points
+
+SD-WAN interacts with other layers:
+- **MPLS Underlay:** Provides primary transport
+- **SASE Layer:** Provides backup path + security
+- **BGP:** Requires coordination (AS-path prepending)
+
+**【日本語サマリ】**
+
+従来WANは手動/ルーティング収束でフェイルオーバー、SD-WANはSLAベースで自動。
+Brownout検知は従来WANにない機能。SD-WANはMPLS/SASE/BGPと連携して動作。
+
+---
+
+## Related Components
+
+- [SASE-ZeroTrust](../SASE-ZeroTrust) - Security policy enforcement
+- [Brownout](../Brownout) - Detailed degradation analysis
+- [Troubleshooting](../Troubleshooting) - Packet capture and visibility
+
+---
+
+*Part of SASE × SD-WAN Verification Lab*
