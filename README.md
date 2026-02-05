@@ -4,7 +4,7 @@ SD-WAN overlay implementation using FortiGate, providing dual-path connectivity 
 
 ---
 
-## Overview
+## 🔬Overview
 
 This component is part of an MPLS/SASE-integrated lab. It focuses on SD-WAN path selection, health monitoring, and failover behavior between multiple WAN paths.
 
