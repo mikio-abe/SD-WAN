@@ -275,7 +275,7 @@ In production, site-to-site connectivity would use BGP over IPsec configured dir
 
 ---
 
-## Key Learnings
+## 🚀Key Learnings
 
 ### SD-WAN vs Traditional WAN
 
