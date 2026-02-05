@@ -162,9 +162,8 @@ SASE-VPN: selectors 1/1 (UP)
 ```
 
 ### ESP Packet Capture
-
+<img width="1172" height="809" alt="image" src="https://github.com/user-attachments/assets/28c8aa37-e34f-450c-b480-5ddc8eaa0d50" />
 <img width="1258" height="952" alt="image" src="https://github.com/user-attachments/assets/ac7834b6-cb5b-4b4c-9da4-9a2d416cbf24" />
-<img width="1316" height="908" alt="image" src="https://github.com/user-attachments/assets/4a4a3540-7e5b-4369-a9a3-8c902e3dd976" />
 
 **📷 Wireshark ESP packet capture**
 
