@@ -163,7 +163,10 @@ SASE-VPN: selectors 1/1 (UP)
 
 ### ESP Packet Capture
 
-**[ 📷 ここに画像添付：Wireshark ESP パケットキャプチャ ]**
+<img width="1258" height="952" alt="image" src="https://github.com/user-attachments/assets/ac7834b6-cb5b-4b4c-9da4-9a2d416cbf24" />
+<img width="1316" height="908" alt="image" src="https://github.com/user-attachments/assets/4a4a3540-7e5b-4369-a9a3-8c902e3dd976" />
+
+**📷 Wireshark ESP packet capture**
 
 | Field | MPLS-VPN | SASE-VPN |
 |-------|----------|----------|
