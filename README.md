@@ -23,19 +23,8 @@ MPLS（プライマリ）とSASE（バックアップ）のデュアルパス設
 
 ## Architecture Position
 
-```
-┌──────────────────────────────────────────────────────┐
-│                    SASE Layer                        │
-├──────────────────────────────────────────────────────┤
-│                   SD-WAN Overlay         ◄── This component
-│  ┌─────────────┐              ┌─────────────┐        │
-│  │  MPLS Path  │              │  SASE Path  │        │
-│  │  (Primary)  │              │  (Backup)   │        │
-│  └─────────────┘              └─────────────┘        │
-├──────────────────────────────────────────────────────┤
-│                   MPLS Underlay                      │
-└──────────────────────────────────────────────────────┘
-```
+<img width="500" alt="image" src="https://github.com/user-attachments/assets/be402da9-0d90-427e-9eed-b0e9f3b2c303" />
+
 
 SD-WAN operates as the **Overlay Layer**, managing path selection between MPLS and SASE independently of underlay routing and security policy enforcement.
 
