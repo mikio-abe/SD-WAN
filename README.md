@@ -212,7 +212,7 @@ Wireshark I/Oグラフで通信継続中の品質劣化を可視化。
 
 ---
 
-## Failover Behavior
+## ✅Failover Behavior
 
 ### Failover Timeline
 
