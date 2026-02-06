@@ -23,7 +23,7 @@ MPLS（プライマリ）とSASE（バックアップ）のデュアルパス設
 
 ## 🏗Architecture Position
 
-<img width="500" alt="image" src="https://github.com/user-attachments/assets/be402da9-0d90-427e-9eed-b0e9f3b2c303" />
+<img width="500" alt="image" src="https://github.com/user-attachments/assets/bb3cbac8-41b1-4a63-9fb7-1ba5ccdfb749" />
 
 
 SD-WAN operates as the **Overlay Layer**, managing path selection between MPLS and SASE independently of underlay routing and security policy enforcement.
