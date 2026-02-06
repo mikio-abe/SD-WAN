@@ -119,12 +119,8 @@ MPLSパスのASホップ数がSASEより多いことを利用し、AS-path prepe
 ## ✅Verification Results
 
 ### Health Check Status
-
+📷 SD-WAN Health Check Before
 **<img width="700" alt="image" src="https://github.com/user-attachments/assets/94006082-1f61-4216-b8d4-6688c34fd66e" />
-
-📷 SD-WAN Health Check Before**
-
-📷 SD-WAN Health Check After**
 
 **Before (Normal State):**
 
@@ -132,6 +128,10 @@ MPLSパスのASホップ数がSASEより多いことを利用し、AS-path prepe
 |--------|--------------|-----|--------|
 | SASE-VPN | ✓ Alive | ✓ OK | Active |
 | MPLS-VPN | ✓ Alive | ✓ OK | Standby |
+
+📷 SD-WAN Health Check After
+
+
 
 **After (SASE Degradation):**
 
