@@ -156,8 +156,8 @@ MPLS-VPN: selectors 1/1 (UP)
 ```
 
 ### ESP Packet Capture
-<img width="1172" height="809" alt="image" src="https://github.com/user-attachments/assets/28c8aa37-e34f-450c-b480-5ddc8eaa0d50" />
-<img width="1258" height="952" alt="image" src="https://github.com/user-attachments/assets/ac7834b6-cb5b-4b4c-9da4-9a2d416cbf24" />
+<img width="1760" alt="image" src="https://github.com/user-attachments/assets/db280bce-ba2d-4a03-8a3e-5a29f0f9f862" />
+
 
 **📷 Wireshark ESP packet capture**
 
