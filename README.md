@@ -70,7 +70,7 @@ SLAはLatency 100ms / Jitter 50ms / Loss 5%を閾値として監視。
 
 ---
 
-## Path Selection Logic
+## 🔀Path Selection Logic
 
 ### SD-WAN Rule Evaluation
 
