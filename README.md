@@ -200,7 +200,10 @@ SD-WAN SLA monitoring detects brownout and triggers failover.
 
 ### Brownout Verification
 
-**[ 📷 ここに画像添付：Brownout時 Wireshark I/O Graph ]**
+📷Brownout Wireshark I/O Graph
+
+<img width="1760" alt="image" src="https://github.com/user-attachments/assets/973de152-957f-47f1-9cc7-82adc2bfa629" />
+
 
 I/O Graph observations:
 - Traffic continues flowing (not zero)
