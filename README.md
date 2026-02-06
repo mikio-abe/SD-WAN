@@ -132,7 +132,7 @@ MPLSパスのASホップ数がSASEより多いことを利用し、AS-path prepe
 
 📷 SD-WAN Health Check After
 
-
+<img width="700" alt="image" src="https://github.com/user-attachments/assets/8dd452ae-7b26-43be-b775-17a7a2edef4a" />
 
 **After (SASE Degradation):**
 
