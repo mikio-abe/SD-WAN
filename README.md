@@ -215,37 +215,6 @@ Brownoutは完全断ではなく部分的な品質劣化（遅延増加、ジッ
 従来のPing監視では検知できないが、SD-WANのSLA監視で検知しフェイルオーバー可能。
 Wireshark I/Oグラフで通信継続中の品質劣化を可視化。
 
----
-
-## 🔄Failover Behavior
-
-### Failover Timeline
-
-```
-### Failover Timeline
-
-**[ 📷 ここに画像添付：FortiGate CLI - diagnose sys sdwan health-check (Before) ]**
-
-**[ 📷 ここに画像添付：FortiGate CLI - diagnose sys sdwan health-check (After) ]**
-
-**[ 📷 ここに画像添付：FortiGate CLI - execute log display (Failover event) ]**
-
-Actual failover timing and behavior to be documented from CLI output.
-
-```
-
-### Key Observations
-
-- **Failover Time:** ~2-3 seconds after SLA violation
-- **Failback:** Automatic when primary recovers
-- **Session Continuity:** TCP sessions maintained during failover (with brief interruption)
-
-**【日本語サマリ】**
-
-SLA違反検知から2-3秒でフェイルオーバー実行。プライマリ復旧時は自動でフェイルバック。
-TCPセッションは短い中断を伴うが維持される。
-
----
 
 ## 🧪Lab Constraints
 
