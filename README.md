@@ -57,8 +57,6 @@ Both tunnels use IPsec ESP (Protocol 50) for site-to-site encryption.
 | Failover Threshold | 5 consecutive failures | Trigger path switch |
 | Recovery Threshold | 5 consecutive successes | Return to primary |
 
-<img width="800" alt="image" src="https://github.com/user-attachments/assets/7ea5ace0-8405-4e43-b2e6-c9f2f36a2293" />
-
 ### SLA Metrics
 
 | Metric | Threshold | Action |
@@ -67,6 +65,7 @@ Both tunnels use IPsec ESP (Protocol 50) for site-to-site encryption.
 | Jitter | > 50ms | SLA violation |
 | Packet Loss | > 5% | SLA violation |
 
+<img width="800" alt="image" src="https://github.com/user-attachments/assets/7ea5ace0-8405-4e43-b2e6-c9f2f36a2293" />
 
 **【日本語サマリ】**
 
