@@ -32,6 +32,10 @@ SD-WAN operates as the **Overlay Layer**, managing path selection between SASE a
 
 SD-WANはOverlay層として動作し、Underlay（MPLS）のルーティングやSASE層のセキュリティポリシーとは独立してパス選択を管理。
 
+<img width="750" alt="image" src="https://github.com/user-attachments/assets/a32fae2a-42cf-4ec5-b03b-74a3b655aa15" />
+
+
+
 ---
 
 ## 🧩Components
