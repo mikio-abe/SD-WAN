@@ -1,4 +1,4 @@
-# SD-WAN
+# FortiGate FW / SD-WAN
 
 SD-WAN overlay implementation using FortiGate, providing dual-path connectivity over SASE and MPLS paths with intelligent path selection.
 
